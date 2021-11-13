@@ -1,5 +1,4 @@
-// ÃâÃ³ : https://kyumoonhan.tistory.com/125
-
+// ì¶œì²˜ : https://kyumoonhan.tistory.com/125
 
 #include "windows.h"
 #include "tchar.h"
@@ -62,24 +61,24 @@ BOOL InjectDll(DWORD dwPID, LPCTSTR szDllPath)
     DWORD dwBufSize = (DWORD)(_tcslen(szDllPath) + 1) * sizeof(TCHAR);
     LPTHREAD_START_ROUTINE pThreadProc;
 
-    //#1. dwPID¸¦ ÀÌ¿ëÇÏ¿© ´ë»ó ÇÁ·Î¼¼½º(notepad.exe)ÀÇ HANDLEÀ» ±¸ÇÑ´Ù
+    //#1. dwPIDë¥¼ ì´ìš©í•˜ì—¬ ëŒ€ìƒ í”„ë¡œì„¸ìŠ¤(notepad.exe)ì˜ HANDLEì„ êµ¬í•œë‹¤
     if (!(hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPID)))
     {
         _tprintf(L"OpenProcess(%d) failed!!! [%d]\n", dwPID, GetLastError());
         return FALSE;
     }
 
-    //#2. ´ë»ó ÇÁ·Î¼¼½º(notepad.exe) ¸Ş¸ğ¸®¿¡ szDllName Å©±â¸¸Å­ ¸Ş¸ğ¸®¸¦ ÇÒ´çÇÑ´Ù
+    //#2. ëŒ€ìƒ í”„ë¡œì„¸ìŠ¤(notepad.exe) ë©”ëª¨ë¦¬ì— szDllName í¬ê¸°ë§Œí¼ ë©”ëª¨ë¦¬ë¥¼ í• ë‹¹í•œë‹¤
     pRemoteBuf = VirtualAllocEx(hProcess, NULL, dwBufSize, MEM_COMMIT, PAGE_READWRITE);
 
-    //#3. ÇÒ´ç¹ŞÀº ¸Ş¸ğ¸®¿¡ myhack.dll °æ·Î("C:\\myhack.dll")¸¦ ¾´´Ù    
+    //#3. í• ë‹¹ë°›ì€ ë©”ëª¨ë¦¬ì— myhack.dll ê²½ë¡œ("C:\\myhack.dll")ë¥¼ ì“´ë‹¤    
     WriteProcessMemory(hProcess, pRemoteBuf, (LPVOID)szDllPath, dwBufSize, NULL);
 
-    //#4. LoadLibraryW() API ÁÖ¼Ò¸¦ ±¸ÇÑ´Ù
+    //#4. LoadLibraryW() API ì£¼ì†Œë¥¼ êµ¬í•œë‹¤
     hMod = LoadLibrary(L"kernel32.dll");
     pThreadProc = (LPTHREAD_START_ROUTINE)GetProcAddress(hMod, "LoadLibraryW");
 
-    // #5. notepad.exe ÇÁ·Î¼¼½º¿¡ ½º·¹µå¸¦ ½ÇÇà
+    // #5. notepad.exe í”„ë¡œì„¸ìŠ¤ì— ìŠ¤ë ˆë“œë¥¼ ì‹¤í–‰
     hThread = CreateRemoteThread(hProcess, NULL, 0, pThreadProc, pRemoteBuf, 0, NULL);
 
     WaitForSingleObject(hThread, INFINITE);
