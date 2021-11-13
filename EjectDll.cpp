@@ -1,4 +1,4 @@
-// ÃâÃ³ : https://blog.daum.net/janey25/13
+// ì¶œì²˜ : https://blog.daum.net/janey25/13
 
 #include <Windows.h>
 #include <TlHelp32.h>
@@ -92,10 +92,10 @@ BOOL EjectDll(DWORD dwPID, LPCTSTR szDllName)
     MODULEENTRY32 me = { sizeof(me) };
     LPTHREAD_START_ROUTINE pThreadProc;
 
-    //#1. ÇÁ·Î¼¼½º¿¡ ·ÎµùµÈ DLL Á¤º¸ ±¸ÇÏ±â
+    //#1. í”„ë¡œì„¸ìŠ¤ì— ë¡œë”©ëœ DLL ì •ë³´ êµ¬í•˜ê¸°
     hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, dwPID);
-    //dwPID = notepadÀÇ ÇÁ·Î¼¼½º ID
-    //TH32CS_SNAPMODULE ÆÄ¶ó¹ÌÅÍ¸¦ ÀÌ¿ëÇØ¼­ notepad ÇÁ·Î¼¼½º¿¡ ·ÎµùµÈ DLL ÀÌ¸§À» ¾ò´Â´Ù
+    //dwPID = notepadì˜ í”„ë¡œì„¸ìŠ¤ ID
+    //TH32CS_SNAPMODULE íŒŒë¼ë¯¸í„°ë¥¼ ì´ìš©í•´ì„œ notepad í”„ë¡œì„¸ìŠ¤ì— ë¡œë”©ëœ DLL ì´ë¦„ì„ ì–»ëŠ”ë‹¤
 
     bMore = Module32First(hSnapshot, &me);
     for (; bMore; bMore = Module32Next(hSnapshot, &me))
@@ -113,18 +113,18 @@ BOOL EjectDll(DWORD dwPID, LPCTSTR szDllName)
         return FALSE;
     }
 
-    //#2. dwPID¸¦ ÀÌ¿ëÇÏ¿© ´ë»ó ÇÁ·Î¼¼½º(notepad.exe)ÀÇ HANDLEÀ» ±¸ÇÑ´Ù
+    //#2. dwPIDë¥¼ ì´ìš©í•˜ì—¬ ëŒ€ìƒ í”„ë¡œì„¸ìŠ¤(notepad.exe)ì˜ HANDLEì„ êµ¬í•œë‹¤
     if (!(hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPID)))
     {
         _tprintf(L"OpenProcess(%d) failed!!! [%d]\n", dwPID, GetLastError());
         return FALSE;
     }
 
-    //#3. FreeLibrary() API ±¸ÇÏ±â
+    //#3. FreeLibrary() API êµ¬í•˜ê¸°
     hModule = GetModuleHandle(L"kernel32.dll");
     pThreadProc = (LPTHREAD_START_ROUTINE)GetProcAddress(hModule, "FreeLibrary");
 
-    //#4. notepad.exe ÇÁ·Î¼¼½º¿¡ ½º·¹µå¸¦ ½ÇÇàÇÑ´Ù
+    //#4. notepad.exe í”„ë¡œì„¸ìŠ¤ì— ìŠ¤ë ˆë“œë¥¼ ì‹¤í–‰í•œë‹¤
     hTread = CreateRemoteThread(hProcess, NULL, 0, pThreadProc, me.modBaseAddr, 0, NULL);
 
     WaitForSingleObject(hThread, INFINITE);
@@ -135,6 +135,7 @@ BOOL EjectDll(DWORD dwPID, LPCTSTR szDllName)
 
     return TRUE;
 }
+
 int _tmain(int argc, TCHAR* argv[])
 {
     DWORD dwPID = 0xFFFFFFFF;
